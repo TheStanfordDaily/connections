@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardinal Connections — Puzzle Generator</title>
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <style>
+    :root {
+      --cardinal:       #8c1515;
+      --cardinal-dark:  #5f0a0a;
+      --bg:             #f0e9de;
+      --bg-card:        #faf6f1;
+      --text:           #1e1b18;
+      --text-light:     #6b6560;
+      --text-white:     #ffffff;
+      --correct:        #2d7a4f;
+      --level-0:        #fedd5c;
+      --level-1:        #6fa287;
+      --level-2:        #4298b5;
+      --level-3:        #620059;
+      --radius:         14px;
+      --font-sans:      'Helvetica Neue', Arial, sans-serif;
+      --font-serif:     Georgia, 'Times New Roman', serif;
+      --transition:     0.18s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      background-image: repeating-linear-gradient(
+        0deg, transparent, transparent 39px,
+        rgba(0,0,0,0.025) 39px, rgba(0,0,0,0.025) 40px
+      );
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--cardinal) 0%, var(--cardinal-dark) 100%);
+      color: var(--text-white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 20px 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+    header h1 {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+    header p {
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-top: 3px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 560px;
+      padding: 32px 16px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 28px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--cardinal) 0%, var(--cardinal-dark) 100%);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-header h2 {
+      color: var(--text-white);
+      font-family: var(--font-serif);
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+    }
+
+    .card-body {
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label, .group-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-light);
+    }
+    input {
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd4c8;
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      transition: border-color var(--transition);
+    }
+    input:focus { border-color: var(--cardinal); }
+    input.error { border-color: #c0392b; }
+    .hint {
+      font-size: 0.7rem;
+      color: var(--text-light);
+    }
+
+    /* One block per group, with a color stripe for its difficulty */
+    .group-block {
+      border-left: 6px solid;
+      padding-left: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .group-block[data-level="0"] { border-color: var(--level-0); }
+    .group-block[data-level="1"] { border-color: var(--level-1); }
+    .group-block[data-level="2"] { border-color: var(--level-2); }
+    .group-block[data-level="3"] { border-color: var(--level-3); }
+    .items-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-generate {
+      background: linear-gradient(135deg, var(--cardinal) 0%, var(--cardinal-dark) 100%);
+      color: var(--text-white);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: filter var(--transition), transform 0.1s;
+      align-self: flex-start;
+    }
+    .btn-generate:hover  { filter: brightness(1.12); }
+    .btn-generate:active { transform: scale(0.97); }
+
+    .btn-link {
+      background: rgba(255,255,255,0.18);
+      color: var(--text-white);
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-link:hover { background: rgba(255,255,255,0.28); }
+
+    .error-msg {
+      font-size: 0.78rem;
+      color: #c0392b;
+      font-weight: 600;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    /* Output card */
+    #output-card { display: none; }
+    #output-card.visible { display: block; }
+
+    .output-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    .code-wrap { position: relative; }
+    .code-box {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.78rem;
+      line-height: 1.6;
+      background: #f5f0ea;
+      border: 1.5px solid #ddd4c8;
+      border-radius: 8px;
+      padding: 14px;
+      white-space: pre;
+      overflow-x: auto;
+      color: var(--text);
+      user-select: all;
+      cursor: text;
+    }
+
+    .btn-copy {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--cardinal);
+      color: var(--text-white);
+      border: none;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: filter var(--transition);
+    }
+    .btn-copy:hover  { filter: brightness(1.15); }
+    .btn-copy.copied { background: var(--correct); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Cardinal Connections Puzzle Generator</h1>
+    <p>Internal use only</p>
+  </header>
+
+  <main>
+    <!-- Input card -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Puzzle Settings</h2>
+        <button class="btn-link" id="btn-sample" type="button">Fill sample</button>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label for="puzzle-num">Puzzle #</label>
+          <input type="number" id="puzzle-num" placeholder="1" min="1" />
+          <span class="hint">Increment by one each day</span>
+        </div>
+        <span class="hint">Enter groups from easiest (yellow) to hardest (purple). Every item must be unique.</span>
+        <div id="groups"></div>
+        <span class="error-msg" id="error-msg"></span>
+        <button class="btn-generate" id="btn-generate">Generate Embed Code</button>
+      </div>
+    </div>
+
+    <!-- Output card -->
+    <div class="card" id="output-card">
+      <div class="card-header">
+        <h2>Embed Code</h2>
+        <a class="btn-link" id="btn-preview" target="_blank" rel="noopener">Open preview ↗</a>
+      </div>
+      <div class="card-body">
+        <div class="output-label">WordPress / Custom HTML block</div>
+        <div class="code-wrap">
+          <pre class="code-box" id="code-output"></pre>
+          <button class="btn-copy" id="btn-copy">Copy</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const BASE_URL   = new URL('index.html', location.href).href;
+    const LEVELS     = ['Yellow — easiest', 'Green', 'Blue', 'Purple — hardest'];
+    const SAMPLE     = [
+      ['Stanford residence halls',  'Roble', 'Branner', 'Lagunita', 'Wilbur'],
+      ['Founded by Stanford alums', 'Google', 'Yahoo', 'Nike', 'Instagram'],
+      ['The ___ (campus landmarks)', 'Dish', 'Oval', 'Quad', 'Claw'],
+      ['Hoover ___',                'Tower', 'Dam', 'Vacuum', 'Institution'],
+    ];
+
+    const groupsEl   = document.getElementById('groups');
+    const puzzleNum  = document.getElementById('puzzle-num');
+    const errorMsg   = document.getElementById('error-msg');
+    const outputCard = document.getElementById('output-card');
+    const codeOutput = document.getElementById('code-output');
+    const btnCopy    = document.getElementById('btn-copy');
+
+    // Build the four group blocks
+    LEVELS.forEach((label, level) => {
+      const block = document.createElement('div');
+      block.className = 'group-block';
+      block.dataset.level = level;
+      block.style.marginBottom = level < 3 ? '18px' : '0';
+      block.innerHTML = `
+        <span class="group-label">${label}</span>
+        <input type="text" class="category" placeholder="Category name" autocomplete="off" />
+        <div class="items-grid">
+          ${[1, 2, 3, 4].map(i => `<input type="text" class="item" placeholder="Item ${i}" autocomplete="off" spellcheck="false" />`).join('')}
+        </div>`;
+      groupsEl.appendChild(block);
+    });
+
+    function getGroups() {
+      return [...groupsEl.querySelectorAll('.group-block')].map(block => ({
+        category: block.querySelector('.category'),
+        items:    [...block.querySelectorAll('.item')],
+      }));
+    }
+
+    function showError(msg, el) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('visible');
+      if (el) { el.classList.add('error'); el.focus(); }
+    }
+    function clearError() {
+      errorMsg.classList.remove('visible');
+      document.querySelectorAll('input.error').forEach(el => el.classList.remove('error'));
+    }
+
+    // Unicode-safe base64url encode (curly quotes, accents, emoji all survive)
+    function encodeData(str) {
+      const bytes = new TextEncoder().encode(str);
+      let bin = '';
+      bytes.forEach(b => { bin += String.fromCharCode(b); });
+      return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    document.getElementById('btn-sample').addEventListener('click', () => {
+      getGroups().forEach((g, i) => {
+        g.category.value = SAMPLE[i][0];
+        g.items.forEach((input, j) => { input.value = SAMPLE[i][j + 1]; });
+      });
+      if (!puzzleNum.value) puzzleNum.value = 1;
+      clearError();
+    });
+
+    document.getElementById('btn-generate').addEventListener('click', () => {
+      clearError();
+
+      const num = puzzleNum.value.trim();
+      if (!num || isNaN(num) || parseInt(num) < 1) {
+        showError('Puzzle number must be a positive integer.', puzzleNum);
+        return;
+      }
+
+      const seen = new Map();   // lowercase item → input
+      const data = [];
+      for (const [level, g] of getGroups().entries()) {
+        const category = g.category.value.trim();
+        if (!category) { showError(`${LEVELS[level]}: category name is required.`, g.category); return; }
+        const items = [];
+        for (const input of g.items) {
+          const item = input.value.trim();
+          if (!item) { showError(`${LEVELS[level]}: all four items are required.`, input); return; }
+          const key = item.toLowerCase();
+          if (seen.has(key)) {
+            seen.get(key).classList.add('error');
+            showError(`“${item}” appears twice. Every item must be unique.`, input);
+            return;
+          }
+          seen.set(key, input);
+          items.push(item);
+        }
+        data.push([category, ...items]);
+      }
+
+      const encoded    = encodeData(JSON.stringify({ g: data }));
+      const gameUrl    = `${BASE_URL}?d=${encoded}&p=${parseInt(num)}`;
+      const iframeCode = `<div style="max-width:560px; margin:0 auto;">\n  <iframe\n    src="${gameUrl}"\n    width="100%"\n    height="640"\n    frameborder="0"\n    style="border:none; border-radius:8px;"\n    title="Cardinal Connections #${parseInt(num)}"\n    allow="clipboard-write">\n  </iframe>\n</div>`;
+
+      codeOutput.textContent = iframeCode;
+      document.getElementById('btn-preview').href = gameUrl;
+
+      outputCard.classList.add('visible');
+      outputCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      btnCopy.textContent = 'Copy';
+      btnCopy.classList.remove('copied');
+    });
+
+    btnCopy.addEventListener('click', () => {
+      navigator.clipboard.writeText(codeOutput.textContent).then(() => {
+        btnCopy.textContent = 'Copied!';
+        btnCopy.classList.add('copied');
+        setTimeout(() => {
+          btnCopy.textContent = 'Copy';
+          btnCopy.classList.remove('copied');
+        }, 2500);
+      });
+    });
+  </script>
+
+</body>
+</html>

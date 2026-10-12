@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardinal Connections</title>
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Toast notifications -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <button id="btn-help" class="icon-btn" aria-label="How to play">?</button>
+    </div>
+    <div class="header-center">
+      <h1>Cardinal Connections</h1>
+      <span class="header-sub" id="puzzle-label">Daily Word Puzzle</span>
+    </div>
+    <div class="header-right">
+      <button id="btn-open-share" class="icon-btn hidden" aria-label="Share results">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/>
+          <polyline points="16 6 12 2 8 6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+      </button>
+      <button id="btn-start-over" class="icon-btn" aria-label="Start over">
+        <svg width="20" height="20" viewBox="0 0 30 30" fill="currentColor" aria-hidden="true">
+          <path d="M 15 3 C 12.031398 3 9.3028202 4.0834384 7.2070312 5.875 A 1.0001 1.0001 0 1 0 8.5058594 7.3945312 C 10.25407 5.9000929 12.516602 5 15 5 C 20.19656 5 24.450989 8.9379267 24.951172 14 L 22 14 L 26 20 L 30 14 L 26.949219 14 C 26.437925 7.8516588 21.277839 3 15 3 z M 4 10 L 0 16 L 3.0507812 16 C 3.562075 22.148341 8.7221607 27 15 27 C 17.968602 27 20.69718 25.916562 22.792969 24.125 A 1.0001 1.0001 0 1 0 21.494141 22.605469 C 19.74593 24.099907 17.483398 25 15 25 C 9.80344 25 5.5490109 21.062074 5.0488281 16 L 8 16 L 4 10 z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Game board -->
+  <main>
+    <p id="prompt">Create four groups of four!</p>
+
+    <div id="board-card">
+      <div id="solved"></div>
+      <div id="board" role="group" aria-label="Word tiles"></div>
+      <div id="empty-msg" class="hidden">No puzzle loaded. Use the generator to create an embed link.</div>
+    </div>
+
+    <div id="mistakes">
+      <span>Mistakes remaining:</span>
+      <span id="mistake-dots"></span>
+    </div>
+
+    <div id="controls">
+      <button id="btn-shuffle"  class="ctrl-btn">Shuffle</button>
+      <button id="btn-deselect" class="ctrl-btn" disabled>Deselect All</button>
+      <button id="btn-submit"   class="ctrl-btn primary" disabled>Submit</button>
+    </div>
+
+    <button id="btn-view-results" class="ctrl-btn primary hidden">View Results</button>
+  </main>
+
+  <!-- Help modal -->
+  <div id="modal-help" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="help-title">How To Play</h2>
+        <button class="modal-close" data-modal="help" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Find groups of four items that share something in common.</p>
+        <ul>
+          <li>Select four items and tap <strong>Submit</strong> to check if your guess is correct.</li>
+          <li>Find all four groups without making 4 mistakes!</li>
+        </ul>
+        <h3>Category Examples</h3>
+        <ul>
+          <li><strong>Stanford residence halls:</strong> Roble, Branner, Lagunita, Wilbur</li>
+          <li><strong>Hoover ___:</strong> Tower, Dam, Vacuum, Institution</li>
+        </ul>
+        <p>Categories will always be more specific than “5-letter words,” “names” or “verbs.”</p>
+        <p>Each puzzle has exactly one solution. Watch out for items that seem to belong to multiple categories!</p>
+        <h3>Difficulty</h3>
+        <p>Each group is assigned a color, revealed as you solve:</p>
+        <div class="legend">
+          <div class="legend-row"><span class="swatch level-0"></span>Straightforward</div>
+          <div class="legend-row"><span class="swatch level-1"></span></div>
+          <div class="legend-row"><span class="swatch level-2"></span></div>
+          <div class="legend-row"><span class="swatch level-3"></span>Tricky</div>
+        </div>
+        <hr />
+        <p>A new puzzle is available each day at stanforddaily.com</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share modal -->
+  <div id="modal-share" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="share-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 id="share-title">Cardinal Connections</h2>
+        <button class="modal-close" data-modal="share" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body share-body">
+        <div id="share-result-line"></div>
+        <div id="share-emoji-grid"></div>
+        <button id="btn-share">Share Results</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>The Stanford Daily</footer>
+
+  <script src="game.js"></script>
+</body>
+</html>

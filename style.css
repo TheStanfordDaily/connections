@@ -94,9 +94,9 @@ header {
 }
 header h1 {
   font-family: var(--font-serif);
-  font-size: 1.3rem;
+  font-size: 1.55rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   color: var(--text-white);
   white-space: nowrap;
 }
@@ -508,7 +508,7 @@ footer {
 
 /* ===== Responsive ===== */
 @media (max-width: 420px) {
-  header h1 { font-size: 1.1rem; }
+  header h1 { font-size: 1.35rem; }
   #board-card { padding: 10px; }
   #board, #solved, #board-card { gap: 6px; }
   .tile, .group { height: 64px; }

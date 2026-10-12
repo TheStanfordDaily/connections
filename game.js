@@ -1,5 +1,5 @@
 // =============================================================
-//  Cardinal Connections — Game Logic
+//  The Quad — Game Logic
 // =============================================================
 
 const GROUP_SIZE     = 4;
@@ -316,11 +316,11 @@ function buildEmojiGrid() {
 }
 
 function getGamePageUrl() {
-  return 'stanforddaily.com/category/games/connections';
+  return 'stanforddaily.com/category/games/the-quad';
 }
 
 function buildShareText() {
-  return `Cardinal Connections #${puzzle.num}\n${buildEmojiGrid()}\n\n${getGamePageUrl()}`;
+  return `The Quad #${puzzle.num} — Stanford Connections\n${buildEmojiGrid()}\n\n${getGamePageUrl()}`;
 }
 
 function openShareModal() {
@@ -446,7 +446,7 @@ function init() {
     return;
   }
 
-  if (puzzle.num) document.getElementById('puzzle-label').textContent = `Puzzle #${puzzle.num}`;
+  if (puzzle.num) document.getElementById('puzzle-label').textContent = `Stanford Connections · #${puzzle.num}`;
   puzzle.groups.forEach(g => g.items.forEach(item => levelOf.set(item, g.level)));
 
   const saved = loadState();

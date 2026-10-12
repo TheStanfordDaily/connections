@@ -1,4 +1,6 @@
-# Cardinal Connections — Embed Guide
+# The Quad — Embed Guide
+
+The Quad is The Stanford Daily's Connections-style game: find four groups of four.
 
 ## 1. Generate the embed code
 

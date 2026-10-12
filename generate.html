@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cardinal Connections — Puzzle Generator</title>
+  <title>The Quad — Puzzle Generator</title>
   <link rel="icon" href="assets/logo.png" type="image/png">
   <style>
     :root {
@@ -245,7 +245,8 @@
 <body>
 
   <header>
-    <h1>Cardinal Connections Puzzle Generator</h1>
+    <h1>The Quad Puzzle Generator</h1>
+    <p style="margin-top:4px">Stanford Connections</p>
     <p>Internal use only</p>
   </header>
 
@@ -383,7 +384,7 @@
 
       const encoded    = encodeData(JSON.stringify({ g: data }));
       const gameUrl    = `${BASE_URL}?d=${encoded}&p=${parseInt(num)}`;
-      const iframeCode = `<div style="max-width:560px; margin:0 auto;">\n  <iframe\n    src="${gameUrl}"\n    width="100%"\n    height="640"\n    frameborder="0"\n    style="border:none; border-radius:8px;"\n    title="Cardinal Connections #${parseInt(num)}"\n    allow="clipboard-write">\n  </iframe>\n</div>`;
+      const iframeCode = `<div style="max-width:560px; margin:0 auto;">\n  <iframe\n    src="${gameUrl}"\n    width="100%"\n    height="640"\n    frameborder="0"\n    style="border:none; border-radius:8px;"\n    title="The Quad #${parseInt(num)}"\n    allow="clipboard-write">\n  </iframe>\n</div>`;
 
       codeOutput.textContent = iframeCode;
       document.getElementById('btn-preview').href = gameUrl;
